@@ -40,6 +40,7 @@ public class CryptosLib {
             System.out.println("Descifrando mensaje de prueba cifrado en RSA");
             byte[] descifradoRSA = AES_RSA_EduLib.RSA.descifrar(cifradoRSA, clavesRSA.getPrivate());
             System.out.println("Mensaje de prueba descifrado: " + AES_RSA_EduLib.Utils.bytesToHex(descifradoRSA) + "\n");
+            System.out.println(" --- Ejemplo 1 ---");
             System.out.println("Demostración de ataque a AES-CBC");
             // Demostración de ataque (uso educativo)
             System.out.println("Cifrando en AES-CBC el texto: " + textoDPrueba);
@@ -52,25 +53,27 @@ public class CryptosLib {
             //System.out.println("Texto cifrado en RSA ASCII: " + new String(cifradoCBC[0]));
             System.out.println("IV en Hex: " + AES_RSA_EduLib.Utils.bytesToHex(cifradoCBC[1]));
             //System.out.println("IV en ASCII: " + new String(cifradoCBC[1]));
-
             AES_RSA_EduLib.Ataques.fuerzaBrutaAES_CBC(cifradoCBC[1], textoPlano, claveAES.getEncoded(), cifradoCBC[0]);
-
+            System.out.println(" --- Fin del ejemplo 1 ---\n\n --- Ejemplo 2 ---");
             // Ejemplo 2            
-            byte[] claveAES1 = AES_RSA_EduLib.Utils.hexToBytes("3085DA511A98D91186669D2623D9D4C5");
+            System.out.println("Texto de prueba para el caso 2 (Desconocido)");
+            byte[] claveAES1 = AES_RSA_EduLib.Utils.hexToBytes("3085DA511A98D91186669D2623D9D4BB");
             byte[] ciphedText = AES_RSA_EduLib.Utils.hexToBytes("28373943F7F2D2048B3B7010AB081458");
             byte[] ivTemp = AES_RSA_EduLib.Utils.hexToBytes("BC02861F56EBF0407076ED35B234709B9713B29065983CB05B067B1811B8F74D");
-
+            // Ataque FB comenzando por la clave ofrecida
             AES_RSA_EduLib.Ataques.fuerzaBrutaAES_CBC(ivTemp, textoDPrueba.getBytes(), claveAES1, ciphedText);
-            
+            System.out.println(" --- Fin del ejemplo 2 ---\n\n --- Ejemplo 3 ---");
             // Ejemplo 3
             // Texto conocido (debe ser un bloque completo de 16 bytes para ECB)
-            byte[] textoPlano1 = "Texto conocido1234".getBytes();
+            String e3 = "Texto conocido1234";
+            System.out.println("Texto de prueba para el caso 3: " + e3);
+            byte[] textoPlano1 = e3.getBytes();
 
-            // Cifrar con una clave conocida (ej: 0x0000...0001)
-            SecretKey claveReal = /*AES_RSA_EduLib.AES.generarClave(128);//*/ new SecretKeySpec(AES_RSA_EduLib.Utils.hexToBytes("000000000000000000000000000000A1"), "AES");
+            // Cifrar con una clave conocida (ej: 0x0000...000A)
+            SecretKey claveReal = /*AES_RSA_EduLib.AES.generarClave(128);//*/ new SecretKeySpec(AES_RSA_EduLib.Utils.hexToBytes("0000000000000000000000000000000A"), "AES");
             byte[] cifrado1 = AES_RSA_EduLib.AES.cifrarECB(textoPlano1, claveReal);
             System.out.println("Texto cifrado en AES ECB con clave: "+AES_RSA_EduLib.Utils.bytesToHex(cifrado1) + "\n");
-            System.out.println("Descifrando AES ECB...");
+            System.out.println("Iniciando ataque FB para descifrar AES ECB...");
             // Ataque (comenzando cerca de la clave real para demostración)
             byte[] claveInicial = AES_RSA_EduLib.Utils.hexToBytes("00000000000000000000000000000000");
             AES_RSA_EduLib.Ataques.fuerzaBrutaAES_ECB(cifrado1, textoPlano1, claveInicial);
@@ -78,4 +81,5 @@ public class CryptosLib {
             System.err.println(e.getMessage());
         }
     }
+
 }
